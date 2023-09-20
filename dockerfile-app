@@ -1,0 +1,24 @@
+FROM python:3.9
+
+WORKDIR /usr/src/app
+
+RUN apt-get update && apt-get install unzip -y
+
+RUN pip install mysql-connector-python && \
+    pip install pandas && \
+    pip install SQLAlchemy && \
+    pip install hvplot && \
+    pip install panel && \
+    pip install matplotlib && \
+    pip install numpy && \
+    pip install scipy && \
+    pip install ipympl && \
+    pip install ipykernel && \
+    pip install ipywidgets_bokeh && \
+    pip install cartopy
+
+COPY vizent.zip /usr/src/vizent.zip
+RUN unzip /usr/src/vizent.zip
+
+COPY app.py /usr/src/app/app.py
+COPY map.png /usr/src/app/map.png

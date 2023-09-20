@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:latest
+    command: --default-authentication-plugin=caching_sha2_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports: 
+      - 3306:3306
+    volumes:
+      - ${HOST_DATA_VOLUME_PATH}:/var/lib/mysql
+  etl:
+    image: dockerfile-etl
+    build: 
+      dockerfile: dockerfile-etl
+    restart: always
+    environment:
+      - MYSQL_ETL_USER=${MYSQL_ETL_USER}
+      - MYSQL_ETL_PASSWORD=${MYSQL_ETL_PASSWORD}
+    command: [/usr/src/app/setup_cron.sh]
+    links: 
+      - db:db
+  web: 
+    image: dockerfile-app
+    build: 
+      dockerfile: dockerfile-app
+    restart: always
+    environment:
+      - MYSQL_APP_USER=${MYSQL_APP_USER}
+      - MYSQL_APP_PASSWORD=${MYSQL_APP_PASSWORD}
+      - MAPBOX_API_TOKEN=${MAPBOX_API_TOKEN}
+    ports: 
+      - 5006:5006
+    command: ["panel", "serve", "/usr/src/app/app.py", "--address", "0.0.0.0"]
+    links: 
+      - db:db

@@ -1,0 +1,8 @@
+.env
+plots
+data
+env.bat
+.ipynb_checkpoints
+.pytest_cache
+.vscode
+*.pyc
