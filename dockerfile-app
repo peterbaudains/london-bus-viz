@@ -15,10 +15,9 @@ RUN pip install mysql-connector-python && \
     pip install ipympl && \
     pip install ipykernel && \
     pip install ipywidgets_bokeh && \
-    pip install cartopy
-
-COPY vizent.zip /usr/src/vizent.zip
-RUN unzip /usr/src/vizent.zip
+    pip install cartopy && \
+    pip install vizent --pre
 
 COPY app.py /usr/src/app/app.py
-COPY map.png /usr/src/app/map.png
+COPY mapbox-logo-black.png /usr/src/app/mapbox-logo-black.png
+
