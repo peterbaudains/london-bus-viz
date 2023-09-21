@@ -49,4 +49,4 @@ Project link: https://github.com/peterbaudains/london-bus-viz
 
 ## Acknowlegements
 
-Created by CUSP London at King's College London. Powered by TfL Open Data. Contains OS data © Crown copyright and database rights 2016 and Geomni UK Map data © and database rights [2019].
+Created by CUSP London at King's College London using the [vizent](https://cusplondon.ac.uk/vizent) library and [Panel](https://panel.holoviz.org/). Powered by TfL Open Data. Contains OS data © Crown copyright and database rights 2016 and Geomni UK Map data © and database rights [2019].
