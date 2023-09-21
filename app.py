@@ -265,7 +265,7 @@ def update(event):
         )
         show_map = pn.pane.Matplotlib(map_fig, dpi=300, name='Map')
         no_map = pn.pane.Matplotlib(nomap_fig, dpi=300, name='No map')
-    layout[2] = pn.Tabs(('Map', show_map), no_map)
+    layout[4] = pn.Tabs(('Map', show_map), no_map)
     layout[3] = context_row
 
 
@@ -274,19 +274,61 @@ pn.extension(sizing_mode="stretch_width", design='material', template="fast")
 pn.state.template.param.update(title="How fast are London buses travelling?")
 
 # Create some text describing the dashboard
-dashboard_desc = """
-                Using open data from TfL, this page uses bus arrival times 
-                to estimate how quickly London buses are travelling on 
-                road segments between stations.
-                
-                Powered by TfL Open Data. Contains OS data © Crown 
-                copyright and database rights 2016 and Geomni UK Map data
-                © and database rights [2019]  
-                """
+dashboard_intro = pn.pane.Markdown("""
+                Using open data from TfL, this dashboard estimates bus speeds \
+                on road segments between stops and creates a data \
+                visualisation of these estimates and their variability using \
+                the [vizent library](https://cusplondon.ac.uk/vizent).
+                """)
+
+data_info = pn.pane.Markdown("""
+The estimates are constructed by looking at the difference \
+in bus arrival estimates from the [TfL unified \
+API](https://api.tfl.gov.uk/) across consecutive stops on \
+a given bus route. Data is collected from the API every 60 \
+seconds. Bus locations are inferred by using the stop with \
+the smallest time to arrival estimate. The time taken for a \
+bus to travel along a road segment is estimated as the \
+difference between the last arrival estimate to the previous \
+stop and the current estimate to the next stop. The average \
+speed along a segment is then computed as the distance of the \
+segment divided by the estimated time taken.
+
+In the visualisations generated, we plot the average of all \
+estimates on the segment captured within the last 30 minutes \
+from the moment the image is rendered, which is represented \
+as the colour of the edges. The variability, represented by \
+the black and white frequency segment of each line, is \
+calculated as the standard error of the mean of each estimate.\
+This captures variability across our estimates but also \
+reduces as our sample size increases. The network segments \
+and their associated variability are plotted on a static \
+background map centred on the home of CUSP London in Bush \
+House, Aldwych.
+
+Our objectives in creating this dashboard are:
+1) To provide real-time insights that can aid operational \
+decision-making in a transport context (for example, to \
+respond to congestion on London's road network).
+2) To capture and visually represent uncertainty associated \
+with our measurements, which is a key factor in determining \
+how to respond, and which can often be neglected in data \
+visualisations that support decision-making.""")
+
+acknlgmnts = pn.pane.Markdown("""
+                This dashboard is created by [CUSP \
+                London](https://cusplondon.ac.uk/) at King's College London \
+                and is powered by TfL Open Data. Contains OS data © Crown \
+                copyright and database rights 2016 and Geomni UK Map data\
+                © and database rights [2019].
+                """)
 
 # Drop down menu
 route_options = get_route_options()
-route_select = pn.widgets.Select(options=route_options['display_text'].values.tolist(), name='Route')
+route_select = pn.widgets.Select(name='Route', 
+                                 options=[' '] + \
+                                    route_options['display_text']\
+                                    .sort_values().values.tolist())
 
 context_row = None
 tabs = None
@@ -298,12 +340,13 @@ map_attribution_html = """Map Data: © <a href='https://www.mapbox.com/about/map
                         <a href='https://www.mapbox.com/map-feedback/' 
                         target='_blank'>Improve this map</a></strong>"""
 
-layout = pn.Column(dashboard_desc, 
-        route_select,
-        tabs,
-        context_row, 
-        pn.pane.HTML(map_attribution_html), 
-)
+layout = pn.Column(dashboard_intro,
+                   pn.Accordion(('Information', data_info),
+                   ('Acknowledgements', acknlgmnts)),
+                   route_select,
+                   context_row, 
+                   tabs,
+                   pn.pane.HTML(map_attribution_html))
 
 route_select.param.watch(update, 'value')
 
