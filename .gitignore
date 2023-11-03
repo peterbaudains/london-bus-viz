@@ -6,3 +6,5 @@ env.bat
 .pytest_cache
 .vscode
 *.pyc
+cache
+*.csv
